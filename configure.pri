@@ -94,48 +94,10 @@ defineReplace(qtConfFunc_crossCompile) {
 }
 
 defineReplace(qtConfFunc_licenseCheck) {
-    exists($$QT_SOURCE_TREE/LICENSE.LGPL3)|exists($$QT_SOURCE_TREE/LICENSE.GPL2)|exists($$QT_SOURCE_TREE/LICENSE.GPL3): \
-        hasOpenSource = true
-    else: \
-        hasOpenSource = false
-    exists($$QT_SOURCE_TREE/LICENSE.QT-LICENSE-AGREEMENT): \
-        hasCommercial = true
-    else: \
-        hasCommercial = false
-
-    commercial = $$config.input.commercial
-    isEmpty(commercial) {
-        $$hasOpenSource {
-            $$hasCommercial {
-                logn()
-                logn("Selecting Qt Edition.")
-                logn()
-                logn("Type 'c' if you want to use the Commercial Edition.")
-                logn("Type 'o' if you want to use the Open Source Edition.")
-                logn()
-                for(ever) {
-                    val = $$lower($$prompt("Which edition of Qt do you want to use? ", false))
-                    equals(val, c) {
-                        commercial = yes
-                        QMAKE_SAVED_ARGS += -commercial
-                    } else: equals(val, o) {
-                        commercial = no
-                        QMAKE_SAVED_ARGS += -opensource
-                    } else {
-                        next()
-                    }
-                    export(QMAKE_SAVED_ARGS)
-                    break()
-                }
-            } else {
-                commercial = no
-            }
-        } else {
-            !$$hasCommercial: \
-                qtConfFatalError("No license files. Cannot proceed. Try re-installing Qt.")
-            commercial = yes
-        }
-    }
+    hasOpenSource = true
+    hasCommercial = false
+    commercial = no
+    QMAKE_SAVED_ARGS += -opensource
 
     equals(commercial, no) {
         !$$hasOpenSource: \
@@ -243,34 +205,9 @@ defineReplace(qtConfFunc_licenseCheck) {
         "Type 'n' to decline this license offer." \
         " "
 
-    for(ever) {
-        logn($$join(msg, $$escape_expand(\\n)))
-        for(ever) {
-            val = $$lower($$prompt("Do you accept the terms of $$affix license? ", false))
-            equals(val, y)|equals(val, yes) {
-                logn()
-                QMAKE_SAVED_ARGS += -confirm-license
-                export(QMAKE_SAVED_ARGS)
-                return(true)
-            } else: equals(val, n)|equals(val, no) {
-                return(false)
-            } else: equals(commercial, yes):equals(val, ?) {
-                licenseFile = $$QT_SOURCE_TREE/LICENSE.QT-LICENSE-AGREEMENT
-            } else: equals(commercial, no):equals(val, l) {
-                licenseFile = $$QT_SOURCE_TREE/LICENSE.LGPL3
-            } else: equals(commercial, no):equals(val, g):$$gpl2Ok {
-                licenseFile = $$QT_SOURCE_TREE/LICENSE.GPL2
-            } else: equals(commercial, no):equals(val, g):$$gpl3Ok {
-                licenseFile = $$QT_SOURCE_TREE/LICENSE.GPL3
-            } else {
-                next()
-            }
-            break()
-        }
-        system("more $$system_quote($$system_path($$licenseFile))")
-        logn()
-        logn()
-    }
+    QMAKE_SAVED_ARGS += -confirm-license
+    export(QMAKE_SAVED_ARGS)
+    return(true)
 }
 
 # custom tests
