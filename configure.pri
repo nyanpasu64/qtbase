@@ -346,7 +346,7 @@ defineTest(qtConfTest_detectPkgConfig) {
 defineTest(qtConfTest_buildParts) {
     parts = $$config.input.make
     isEmpty(parts) {
-        parts = libs examples
+        parts = libs
 
         $$qtConfEvaluate("features.developer-build"): \
             parts += tests
@@ -655,8 +655,6 @@ defineReplace(printInstallPaths) {
         $$printInstallPath(ArchData, archdatadir, .) \
         $$printInstallPath(Data, datadir, .) \
         $$printInstallPath(Translations, translationdir, translations) \
-        $$printInstallPath(Examples, examplesdir, examples) \
-        $$printInstallPath(Tests, testsdir, tests)
     return($$ret)
 }
 
@@ -744,8 +742,6 @@ defineTest(qtConfOutput_preparePaths) {
         data_pfx = $$config.rel_input.datadir/
     processQtPath("", docdir, $${data_pfx}doc)
     processQtPath("", translationdir, $${data_pfx}translations)
-    processQtPath("", examplesdir, $${data_pfx}examples)
-    processQtPath("", testsdir, tests)
     processQtPath("", archdatadir, .)
     !equals(config.rel_input.archdatadir, .): \
         archdata_pfx = $$config.rel_input.archdatadir/
@@ -802,8 +798,6 @@ defineTest(qtConfOutput_preparePaths) {
     addConfStr($$config.rel_input.archdatadir)
     addConfStr($$config.rel_input.datadir)
     addConfStr($$config.rel_input.translationdir)
-    addConfStr($$config.rel_input.examplesdir)
-    addConfStr($$config.rel_input.testsdir)
 
     QT_CONFIGURE_STR_OFFSETS_ALL = $$QT_CONFIGURE_STR_OFFSETS
     QT_CONFIGURE_STRS_ALL = $$QT_CONFIGURE_STRS
