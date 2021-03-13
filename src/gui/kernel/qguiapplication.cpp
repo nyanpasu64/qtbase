@@ -3207,6 +3207,14 @@ void QGuiApplicationPrivate::processScreenLogicalDotsPerInchChange(QWindowSystem
     s->d_func()->updateGeometriesWithSignals();
 
     resetCachedDevicePixelRatio();
+
+    // Send DPI changed event to all windows on the current screen.
+    const auto allWindows = QGuiApplication::allWindows();
+    for (QWindow *window : allWindows) {
+        if (!window->isTopLevel() || window->screen() != e->screen)
+            continue;
+        window->d_func()->emitLogicalDpiChangedRecursion();
+    }
 }
 
 void QGuiApplicationPrivate::processScreenRefreshRateChange(QWindowSystemInterfacePrivate::ScreenRefreshRateEvent *e)

@@ -488,6 +488,17 @@ void QWindowPrivate::emitScreenChangedRecursion(QScreen *newScreen)
     }
 }
 
+void QWindowPrivate::emitLogicalDpiChangedRecursion()
+{
+    Q_Q(QWindow);
+    QScreen *screen = q->screen();
+    emit q->screenChanged(screen);
+    for (QObject *child : q->children()) {
+        if (child->isWindowType())
+            static_cast<QWindow *>(child)->d_func()->emitLogicalDpiChangedRecursion();
+    }
+}
+
 void QWindowPrivate::setTopLevelScreen(QScreen *newScreen, bool recreate)
 {
     Q_Q(QWindow);
